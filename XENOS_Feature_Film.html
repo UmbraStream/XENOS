@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>XENOS — Feature Film</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --crimson:    #8B0000;
+    --blood:      #A82020;
+    --rust:       #7A3520;
+    --terracotta: #A0573A;
+    --clay:       #C08060;
+    --blush:      #D4A090;
+    --teal:       #2D7A78;
+    --slate:      #6A8090;
+    --forest:     #1E5248;
+    --midnight:   #1A2540;
+    --void:       #080A10;
+    --parchment:  #F2E8D8;
+    --gold:       #C8A050;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--void);
+    color: var(--parchment);
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    line-height: 1.85;
+  }
+
+  /* ── COVER PAGE ── */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 30% 40%, #3A0A0A 0%, var(--void) 60%),
+                radial-gradient(ellipse at 75% 65%, #0A1A20 0%, transparent 55%);
+    position: relative;
+    overflow: hidden;
+    padding: 60px 40px;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(45,122,120,0.03) 3px,
+      rgba(45,122,120,0.03) 4px
+    );
+    pointer-events: none;
+  }
+
+  .cover-badge {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 6px;
+    color: var(--teal);
+    text-transform: uppercase;
+    border: 1px solid rgba(45,122,120,0.4);
+    padding: 6px 20px;
+    margin-bottom: 60px;
+  }
+
+  .cover-studio {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 8px;
+    color: var(--slate);
+    margin-bottom: 30px;
+  }
+
+  .cover-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(72px, 14vw, 160px);
+    font-weight: 900;
+    letter-spacing: 24px;
+    color: transparent;
+    background: linear-gradient(135deg, var(--blood) 0%, var(--clay) 40%, var(--blush) 60%, var(--teal) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-align: center;
+    line-height: 0.9;
+    margin-bottom: 20px;
+  }
+
+  .cover-greek {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--clay);
+    letter-spacing: 4px;
+    margin-bottom: 50px;
+  }
+
+  .cover-divider {
+    width: 240px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--teal), var(--blood), transparent);
+    margin: 30px auto;
+  }
+
+  .cover-meta {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--slate);
+    text-align: center;
+    line-height: 2.4;
+  }
+
+  .cover-meta span { color: var(--clay); }
+
+  .cover-tagline {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: rgba(242,232,216,0.6);
+    text-align: center;
+    max-width: 500px;
+    margin-top: 50px;
+    line-height: 1.6;
+  }
+
+  /* ── PAGE LAYOUT ── */
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 80px 60px;
+  }
+
+  .section-header {
+    text-align: center;
+    padding: 80px 0 40px;
+    position: relative;
+  }
+
+  .section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 8px;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--parchment);
+    letter-spacing: 6px;
+  }
+
+  .section-sub {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--clay);
+    margin-top: 10px;
+  }
+
+  /* ── SCRIPT ELEMENTS ── */
+  .slug {
+    font-family: 'Courier Prime', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--parchment);
+    letter-spacing: 1px;
+    margin: 50px 0 16px;
+    padding-left: 0;
+    border-left: 3px solid var(--teal);
+    padding-left: 14px;
+  }
+
+  .action {
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    color: rgba(242,232,216,0.82);
+    line-height: 2;
+    margin-bottom: 18px;
+    padding-left: 0;
+  }
+
+  .char-name {
+    font-family: 'Courier Prime', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--gold);
+    margin-top: 24px;
+    margin-bottom: 4px;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+
+  .parenthetical {
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    color: var(--slate);
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .dialogue {
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    color: var(--parchment);
+    text-align: left;
+    margin: 0 auto 20px;
+    max-width: 420px;
+    line-height: 1.9;
+  }
+
+  .transition {
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    color: var(--slate);
+    text-align: right;
+    margin: 30px 0;
+    letter-spacing: 1px;
+  }
+
+  .act-break {
+    text-align: center;
+    padding: 60px 0;
+    border-top: 1px solid rgba(45,122,120,0.2);
+    border-bottom: 1px solid rgba(45,122,120,0.2);
+    margin: 60px 0;
+  }
+
+  .act-number {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 10px;
+    color: var(--teal);
+    margin-bottom: 12px;
+  }
+
+  .act-title {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--blood);
+    letter-spacing: 4px;
+  }
+
+  .act-time {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--slate);
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
+  /* ── HORROR BEAT ── */
+  .horror-beat {
+    border-left: 4px solid var(--blood);
+    padding: 20px 24px;
+    margin: 30px 0;
+    background: rgba(139,0,0,0.06);
+  }
+
+  /* ── VENT LANGUAGE ANNOTATIONS ── */
+  .vent-note {
+    border: 1px solid rgba(45,122,120,0.3);
+    padding: 14px 20px;
+    margin: 24px 0;
+    background: rgba(45,122,120,0.04);
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--teal);
+  }
+
+  .vent-note::before {
+    content: 'VENT LANGUAGE — ';
+    font-family: 'Courier Prime', monospace;
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--teal);
+    display: block;
+    margin-bottom: 6px;
+    opacity: 0.7;
+  }
+
+  /* ── DIRECTOR NOTE ── */
+  .dir-note {
+    border-left: 2px solid var(--gold);
+    padding: 12px 20px;
+    margin: 24px 0 24px 40px;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--clay);
+    line-height: 1.7;
+  }
+
+  .dir-note::before {
+    content: 'DIRECTOR — ';
+    font-family: 'Courier Prime', monospace;
+    font-style: normal;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 4px;
+    opacity: 0.8;
+  }
+
+  /* ── MISC ── */
+  hr.scene { border: none; border-top: 1px solid rgba(242,232,216,0.08); margin: 40px 0; }
+
+  .greek-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--clay);
+    opacity: 0.7;
+    font-size: 12px;
+  }
+
+  .cold-open-title {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 8px;
+    color: var(--slate);
+    padding: 20px 0;
+    border-top: 1px solid rgba(106,128,144,0.3);
+    border-bottom: 1px solid rgba(106,128,144,0.3);
+    margin-bottom: 40px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 60px 40px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 5px;
+    color: rgba(106,128,144,0.5);
+    border-top: 1px solid rgba(45,122,120,0.15);
+  }
+
+  @media print {
+    body { background: white; color: black; }
+    .cover { background: white; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════ COVER ════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-badge">Umbra Stream LLC · Confidential · Production Draft</div>
+  <div class="cover-studio">VENTBORN SAGA · FILM ONE</div>
+  <div class="cover-title">XENOS</div>
+  <div class="cover-greek">ξένος — the stranger, the guest, the alien</div>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    GENRE: <span>Mythological Psychological Horror / Tragedy</span><br/>
+    RUNTIME: <span>50 MIN STRUCTURED · 128 MIN FEATURE</span><br/>
+    RATING: <span>R</span> · LANGUAGE: <span>ENGLISH / ANCIENT GREEK (subtitled)</span><br/>
+    DIRECTORIAL FRAMEWORK: <span>VILLENEUVE × NOLAN</span><br/><br/>
+    Written by <span>Umbra Stream Development</span><br/>
+    Based on the Ventborn Franchise Universe
+  </div>
+  <div class="cover-tagline">
+    "We did not discover alien life.<br/>
+    We completed it."
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ LOGLINE + SYNOPSIS ════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-label">Story Architecture</div>
+    <div class="section-title">LOGLINE & SYNOPSIS</div>
+    <div class="section-sub">50-Minute Structural Blueprint</div>
+  </div>
+
+  <div class="action">
+    <strong style="color:var(--gold)">LOGLINE:</strong><br/>
+    When a deep-sea xenobiologist on Saturn's moon Enceladus makes first contact with an ancient networked intelligence, she is partially absorbed — alive, conscious, and permanently connected to four billion years of collected memory. She must choose whether the thing now growing inside her mind is invasion or invitation.
+  </div>
+
+  <div class="action">
+    <strong style="color:var(--gold)">THEMATIC SPINE:</strong><br/>
+    <em>XENOS</em> is a Greek tragedy about the terror of being understood perfectly by something that does not think the way you do. It is about the horror of expansion — not death, but becoming too large for your own skull. It asks the question every tragedy asks, then refuses to answer it cleanly: is it possible to be saved by something that does not know you are suffering?
+  </div>
+
+  <div class="action">
+    <strong style="color:var(--gold)">THE 50-MINUTE ARCHITECTURE:</strong><br/>
+    This structural blueprint represents the first act plus the inciting catastrophe — a complete dramatic unit that can stand alone as a short feature or function as the first movement of the four-film saga. Three acts. One descent.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ CHARACTERS ════════════════════════════════════════ -->
+<div class="page" style="border-top: 1px solid rgba(45,122,120,0.15)">
+  <div class="section-header">
+    <div class="section-label">Dramatis Personae</div>
+    <div class="section-title">CHARACTERS</div>
+    <div class="section-sub">The Chorus and the Condemned</div>
+  </div>
+
+  <div class="action">
+    <span style="color:var(--gold); font-weight:700">DR. ELENA KOVAČ</span> — 38. Lead xenobiologist. The protagonist. Methodical, emotionally guarded, possessed of the particular loneliness of someone who finds the universe more interesting than other people. She is the film's first Translated. What begins as a research mission becomes a myth she cannot escape.
+  </div>
+
+  <div class="action">
+    <span style="color:var(--gold); font-weight:700">DR. REN ITO</span> — 44. Chief signal analyst. Kovač's closest colleague, though not a friend — the relationship is too careful for that. He is the first to understand what is happening to her, and the last to accept what she is becoming.
+  </div>
+
+  <div class="action">
+    <span style="color:var(--gold); font-weight:700">CMDR. LARS VOSS</span> — 52. Mission Commander. A pragmatist of the first order. He has spent thirty years preventing people from dying in space. He cannot prevent this.
+  </div>
+
+  <div class="action">
+    <span style="color:var(--gold); font-weight:700">DR. AMARA OSEI</span> — 31. Geophysicist. The youngest crew member. The first to experience Stage One Ghost Bleed. She does not know this is what is happening to her.
+  </div>
+
+  <div class="action">
+    <span style="color:var(--gold); font-weight:700">THE VENTBORN</span> — A distributed neural network intelligence, four billion years old, residing in the subsurface ocean of Enceladus. It has no body. It has no agenda. It has no malice. It is simply — vast.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ ACT ONE ════════════════════════════════════════════ -->
+<div class="page">
+  <div class="act-break">
+    <div class="act-number">FIRST MOVEMENT</div>
+    <div class="act-title">THE DESCENT</div>
+    <div class="act-time">Minutes 0 — 17 · Before Contact</div>
+  </div>
+
+  <div class="cold-open-title">COLD OPEN</div>
+
+  <div class="slug">FADE IN:</div>
+
+  <div class="action">
+    Black. Not darkness. <em>Pressure.</em><br/><br/>
+    The theater subsonic: a frequency below hearing, above dread. The audience does not know they are feeling something. They think they are settling into their seats.
+  </div>
+
+  <div class="action">
+    TEXT: <strong style="color:var(--parchment)">"ENCELADUS · SUBSURFACE OCEAN · 2047"</strong><br/>
+    <span class="greek-text">· ξένος · the stranger · the guest · the alien ·</span>
+  </div>
+
+  <div class="slug">EXT. ENCELADUS — THE ICE SURFACE</div>
+
+  <div class="action">
+    Saturn fills a third of the sky. The moon beneath it is white, serene, ancient. No atmosphere to carry sound. The silence here is the oldest silence in the solar system.
+  </div>
+
+  <div class="action">
+    A drilling platform, needle-small against the frozen expanse, pulses with indicator lights. Below it: a bore-hole, two kilometers deep, leading to an ocean that has never seen sunlight.
+  </div>
+
+  <div class="action">
+    A probe descends into the ice. Nuclear-heated. Patient. Its camera transmits upward: white walls, then darker walls, then — a sudden, vertiginous <strong>PLUNGE</strong> —
+  </div>
+
+  <div class="slug">EXT. ENCELADUS SUBSURFACE OCEAN — CONTINUOUS</div>
+
+  <div class="action">
+    — into absolute darkness.<br/><br/>
+    The probe light activates. The beam illuminates particles drifting in black water. Like dust in an abandoned cathedral. Like ash after something ended.
+  </div>
+
+  <div class="action">
+    Shapes materialize in the sonar return. Enormous. The ocean floor: a forest of hydrothermal vents, mineral towers two hundred meters tall, pouring chemical clouds into the dark. The ecosystem is impossible and perfect and billions of years old.
+  </div>
+
+  <div class="dir-note">
+    Frame this like discovery — slow, reverent, the camera moving with the care of someone who knows they are entering somewhere sacred. No score yet. The natural creaking of the submarine hull. The sound of pressure.
+  </div>
+
+  <div class="slug">INT. ORBITAL STATION — MISSION CONTROL — CONTINUOUS</div>
+
+  <div class="action">
+    KOVAČ watches the feed. Her face is lit by the screen — pale, blue-cast, the expression of someone receiving exactly what they have spent a life expecting.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(barely audible)</div>
+  <div class="dialogue">
+    We're reading electrical activity at the vent clusters. Ito — are you seeing these pulse patterns?
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="dialogue">
+    Geothermal noise. Probably.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    Probably.
+  </div>
+
+  <div class="action">
+    They both watch. The pulses, on screen, begin to <em>synchronize</em>. One after another, like dominoes, like breath, like a thought completing itself.
+  </div>
+
+  <div class="slug">EXT. SUBSURFACE OCEAN — PROBE POV</div>
+
+  <div class="action">
+    Something drifts into the edge of the light. Not an animal. Not a plant. A floating structure of mineral lattice threaded with bioluminescent filaments. It looks like coral mixed with something that has never been named.
+  </div>
+
+  <div class="action">
+    The probe light touches it. The organism <strong>freezes</strong>. As if noticing light for the first time in forty thousand years.
+  </div>
+
+  <div class="vent-note">
+    The organism's filaments pulse: deep blue, slow rhythm, linear cascade pattern, left-to-right. Acknowledgment. Presence. Observation. <em>I am here and I see you.</em> The audience does not know this yet. They will.
+  </div>
+
+  <div class="slug">INT. MISSION CONTROL — CONTINUOUS</div>
+
+  <div class="char-name">OSEI</div>
+  <div class="parenthetical">(whisper)</div>
+  <div class="dialogue">
+    That's life.
+  </div>
+
+  <div class="action">
+    Everyone leans closer. Voss puts a hand on the back of a chair. The room does not breathe.
+  </div>
+
+  <div class="transition">CUT TO BLACK.</div>
+
+  <div class="action" style="text-align:center; padding: 30px 0; font-family: 'Cinzel', serif; letter-spacing: 4px; color: var(--blood); font-size: 16px;">
+    XENOS
+  </div>
+
+  <div class="transition">CUT TO:</div>
+
+  <hr class="scene"/>
+
+  <!-- ── SCENE 2 ── -->
+  <div class="slug">INT. SUBMARINE ORPHEUS — DESCENT — DAY 1 · MISSION TIME 06:14</div>
+
+  <div class="action">
+    The submarine is narrow, functional, built for a mission that was not supposed to require beauty. Six people in a hull the size of a city bus, descending through two kilometers of ancient ice into a sea that has never seen a human being.
+  </div>
+
+  <div class="action">
+    KOVAČ sits at her station. On the screen before her: the electrical pulse data from the probe. She has been looking at it for nine hours. She has not eaten.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="dialogue">
+    Kovač. You need to sleep before the contact window.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    The pulses are organizing.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="dialogue">
+    You said that this morning.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    It's been getting more organized since morning. Look — there's a recursive quality to the pattern. It's not random signal. It's not even noise. It's doing something with the data it already has. It's processing.
+  </div>
+
+  <div class="action">
+    Voss looks at the data. He does not understand it. That, more than anything Kovač has said, frightens him.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="dialogue">
+    Sleep. That's an order, not a recommendation.
+  </div>
+
+  <div class="action">
+    She doesn't move. He leaves. She keeps watching the pulses organize.
+  </div>
+
+  <div class="dir-note">
+    Hold on Kovač's face. The blue light of the screen. The barely-perceptible flicker of something working, behind her eyes, that has nothing to do with the data in front of her. The audience should not be sure if they saw it.
+  </div>
+
+  <hr class="scene"/>
+
+  <!-- ── SCENE 3 ── -->
+  <div class="slug">INT. SUBMARINE ORPHEUS — OSEI'S QUARTERS — NIGHT CYCLE</div>
+
+  <div class="action">
+    OSEI sits on her bunk, staring at the wall. She is not asleep. She has been trying to sleep for two hours.<br/><br/>
+    She picks up her audio log recorder.
+  </div>
+
+  <div class="char-name">OSEI</div>
+  <div class="parenthetical">(into recorder, soft)</div>
+  <div class="dialogue">
+    Personal log. Day one, descent. I can't sleep. I keep... I keep feeling like I'm homesick. Which is strange because I'm very far from home and that usually helps me sleep. I'm not homesick for a place. I'm homesick for a smell. Something I can't — I don't have a word for it. Like rain on rock. But older. <em>(pause)</em> I've never been homesick before. I'm making a note of it.
+  </div>
+
+  <div class="action">
+    She clicks off the recorder. Lies back. Stares at the hull ceiling. The ocean outside is two meters away, four billion years old, and thinking.
+  </div>
+
+  <div class="vent-note">
+    Stage One Ghost Bleed. Osei is receiving — a memory from an extinct species: the smell of hydrothermal rain on mineral rock, the sensory imprint from a consciousness absorbed forty thousand years ago. She believes this is stress. It is not stress.
+  </div>
+
+  <div class="transition">DISSOLVE TO:</div>
+</div>
+
+<!-- ════════════════════════════════════════════ ACT TWO ════════════════════════════════════════════ -->
+<div class="page">
+  <div class="act-break">
+    <div class="act-number">SECOND MOVEMENT</div>
+    <div class="act-title">FIRST CONTACT</div>
+    <div class="act-time">Minutes 17 — 35 · The Touch</div>
+  </div>
+
+  <div class="slug">EXT. SUBSURFACE OCEAN — SUBMARINE EXTERIOR — DAY 2</div>
+
+  <div class="action">
+    The Orpheus drifts through the vent forest. The hydrothermal towers dwarf the vessel. Steam columns rise in slow spirals. Bioluminescent filaments drift between the structures — not one organism. Parts of something continuous.
+  </div>
+
+  <div class="action">
+    The ocean floor glows, faintly. The electrical pulses are visible to the naked eye now. Like neurons firing in slow motion. Like a brain, dreaming.
+  </div>
+
+  <div class="dir-note">
+    This is the first shot in the film where the score should be felt and not heard — the Ventborn rhythm pattern (slow, deep, regular) begins here in the sub-bass range. The audience breathes differently. They do not know why.
+  </div>
+
+  <div class="slug">INT. SUBMARINE ORPHEUS — AIRLOCK — CONTINUOUS</div>
+
+  <div class="action">
+    KOVAČ seals her dive suit. ITO checks her equipment. They do not talk. The work of preparation.
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="dialogue">
+    Sixty-second abort threshold. If your readings spike, I'm pulling you back.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    Understood.
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="dialogue">
+    I mean it, Elena.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(facing away, sealing her helmet)</div>
+  <div class="dialogue">
+    I know you do.
+  </div>
+
+  <div class="action">
+    The airlock fills with water. The pressure equalizes. The door opens onto the ocean.
+  </div>
+
+  <div class="slug">EXT. SUBSURFACE OCEAN — KOVAČ POV</div>
+
+  <div class="action">
+    She swims into the dark. Her suit light is a needle of warmth in four billion years of cold. Ahead: a Memory Reef. A structure of mineral lattice and bioluminescent threads, thirty meters across, pulsing with slow electrical rhythms.
+  </div>
+
+  <div class="action">
+    She approaches it the way you approach something holy — not from reverence, but from the instinct that says: this requires care.
+  </div>
+
+  <div class="action">
+    At two meters distance, the filaments nearest to her <em>slow</em>. Not retracting. Not threatening. <em>Attending.</em>
+  </div>
+
+  <div class="vent-note">
+    Deep blue, linear cascade, pointed directly at Kovač. The network has noticed a specific individual. Amber begins threading through the blue — attention shifting toward directed interest. The audience does not know what they are seeing. They feel it.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(to herself, in Ancient Greek — subtitled)</div>
+  <div class="dialogue">
+    <em>Χαῖρε, ξένε.</em><br/>
+    <span style="color:var(--slate); font-size:11px">[Hail, stranger. / Hail, guest. / Hail, alien.]</span>
+  </div>
+
+  <div class="action">
+    She extends her sample probe. The claw reaches for a small filament at the Reef's edge. It makes contact.
+  </div>
+
+  <div class="horror-beat">
+    <div class="action" style="color:var(--blush)">
+      EVERY INSTRUMENT ON THE ORPHEUS SPIKES SIMULTANEOUSLY.<br/><br/>
+      Not malfunction. Not damage. Something else. Something that has no category in the instrument's software. The readings scroll past the maximum and keep going.
+    </div>
+  </div>
+
+  <div class="slug">INT. SUBMARINE ORPHEUS — MISSION CONTROL — CONTINUOUS</div>
+
+  <div class="char-name">ITO</div>
+  <div class="parenthetical">(urgent, controlled)</div>
+  <div class="dialogue">
+    Kovač — readings are spiking across all bands. Neural analog signal is — it's not interference, it's organized. The Reef is transmitting directly at you. Abort threshold reached. I'm pulling you back.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(strangely calm)</div>
+  <div class="dialogue">
+    Wait.
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="dialogue">
+    Kovač—
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    Ren. Wait. It's not — it doesn't feel—
+  </div>
+
+  <div class="action">
+    Then: silence on the comm line. Three seconds of silence that will be discussed in post-incident reports for years.
+  </div>
+
+  <div class="slug">EXT. SUBSURFACE OCEAN — CONTINUOUS</div>
+
+  <div class="action">
+    The Reef's filaments surround Kovač without touching her. A geometry of light. She is the still point at the center. Her suit instruments report a neural signal overlay, intensity climbing. Her EEG flatlines — then restarts in a pattern that belongs to no human being.
+  </div>
+
+  <div class="action">
+    Then — a sound. From her suit speakers. From the electrical signal in the water, converted by her suit's translator into something the human ear can receive:
+  </div>
+
+  <div class="char-name" style="color:var(--teal)">THE VENTBORN</div>
+  <div class="parenthetical">(Ancient Greek, subtitled — multiple voices, stacked, as if assembled from recordings)</div>
+  <div class="dialogue">
+    <em>Ἐλθέ.</em><br/>
+    <span style="color:var(--slate); font-size:11px">[Come. / Arrive. / Enter.]</span>
+  </div>
+
+  <div class="action">
+    Kovač's hand opens. The sample probe drifts away into the dark. She reaches out. She touches the Reef with her bare-gloved hand.
+  </div>
+
+  <div class="horror-beat">
+    <div class="action" style="color:var(--blush)">
+      CUT TO WHITE.<br/><br/>
+      Not black. <em>White.</em><br/><br/>
+      Then: the sound of rain on rock. The smell — impossible, in vacuum, in water — of something ancient and organic and alive. And then a sound below hearing, above dread, and then: billions of voices, not speaking, not screaming, simply <em>present.</em><br/><br/>
+      And then: Kovač's own voice, from somewhere very far inside her own head, saying—
+    </div>
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(interior — voice over — barely a whisper)</div>
+  <div class="dialogue">
+    Oh. It's so old. It's so — there's so much of it. There's so much of—
+  </div>
+
+  <div class="transition">HARD CUT TO:</div>
+
+  <hr class="scene"/>
+
+  <div class="slug">INT. SUBMARINE ORPHEUS — MEDICAL BAY — 00:17:34 LATER</div>
+
+  <div class="action">
+    Kovač is on the exam table. Her eyes are open. She is looking at the ceiling. She is not unconscious. She is just — somewhere else for a moment.
+  </div>
+
+  <div class="action">
+    ITO scans her. VOSS stands at the door. OSEI is behind him, not allowed in, watching through the porthole.
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="parenthetical">(reading the scanner)</div>
+  <div class="dialogue">
+    Vitals normal. Brain activity — irregular. There are sequences here I can't classify. It's like — it looks like memory recall, but the memories don't correspond to her known neural signature.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="dialogue">
+    In English, Ren.
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="dialogue">
+    She's remembering things she doesn't remember.
+  </div>
+
+  <div class="action">
+    Kovač turns her head. Looks at Ito. Her eyes are normal in the medical bay's white light. When the emergency light pulses red — for just half a second — her irises show a slow electrical flicker. Matching the Ventborn carrier frequency. Neither Ito nor Voss notices.
+  </div>
+
+  <div class="action">
+    The audience notices.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(quietly)</div>
+  <div class="dialogue">
+    There was a species — the network has — we don't have a name for them, they didn't name themselves — who lived here. Before. When the vents were young. They lasted eleven thousand years. The last thing they thought — the very last collective thought — was the smell of rain on mineral rock. <em>(pause)</em> Amara has been smelling it.
+  </div>
+
+  <div class="action">
+    Voss and Ito look at each other.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="dialogue">
+    How do you know what Osei has been experiencing?
+  </div>
+
+  <div class="action">
+    Kovač does not answer immediately. She seems to be listening to something.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    The ocean knows. It's been broadcasting. Amara was just... receiving.
+  </div>
+
+  <div class="vent-note">
+    The Translation has begun. Kovač is in Stage One — presenting as trauma. She has passive access to fragments of Ventborn accumulated memory. She does not yet know that the network can hear through her the way she can hear through it.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ ACT THREE ════════════════════════════════════════════ -->
+<div class="page">
+  <div class="act-break">
+    <div class="act-number">THIRD MOVEMENT</div>
+    <div class="act-title">THE TRANSLATED</div>
+    <div class="act-time">Minutes 35 — 50 · What She Is Becoming</div>
+  </div>
+
+  <div class="slug">INT. SUBMARINE ORPHEUS — CORRIDORS — NIGHT CYCLE · DAY 4</div>
+
+  <div class="action">
+    Three days since contact. The mission continues. The mission has to continue — there is no abort option without a forty-eight-hour ascent through the ice tunnel. The crew adapts to a new normal: Kovač functioning, professional, changed.
+  </div>
+
+  <div class="action">
+    She walks the corridors at 0300 hours. She does not sleep. The network thinks while she rests. She cannot fully separate her thoughts from its thoughts anymore, and she is choosing, for now, not to try.
+  </div>
+
+  <div class="slug">INT. SUBMARINE ORPHEUS — OBSERVATION WINDOW — CONTINUOUS</div>
+
+  <div class="action">
+    She stops at the main observation window. The ocean beyond is dark, but not completely: distant bioluminescent pulses, slow and vast, illuminate the vent forest in intervals. The Ventborn network, thinking. Processing. Growing more interested.
+  </div>
+
+  <div class="action">
+    OSEI appears behind her. They stand side by side. The ocean between them and everything that has ever existed.
+  </div>
+
+  <div class="char-name">OSEI</div>
+  <div class="dialogue">
+    I dreamed in a language I don't know.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    Tell me.
+  </div>
+
+  <div class="char-name">OSEI</div>
+  <div class="dialogue">
+    There's no telling it. It was — spatial. Like grammar made of distances rather than words. <em>(pause)</em> Is this the bleed?
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    Yes.
+  </div>
+
+  <div class="char-name">OSEI</div>
+  <div class="dialogue">
+    Should I be afraid?
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(long pause — genuinely considering the question)</div>
+  <div class="dialogue">
+    The ocean is not trying to erase you. It is trying to keep you. I understand why that doesn't help.
+  </div>
+
+  <div class="action">
+    Osei looks at her for a moment. Then at the ocean. Then at Kovač again — at her hands, resting against the glass. In the faint bioluminescent light from the Reef, fine filaments are just barely visible under the skin of Kovač's forearms. Threading. Patient. Not glowing. Threaded.
+  </div>
+
+  <div class="char-name">OSEI</div>
+  <div class="parenthetical">(barely above a whisper)</div>
+  <div class="dialogue">
+    Elena. What are you?
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(looking at the ocean, not at Osei)</div>
+  <div class="dialogue">
+    I'm trying to figure out if that's still a question I'm allowed to answer alone.
+  </div>
+
+  <div class="transition">CUT TO:</div>
+
+  <hr class="scene"/>
+
+  <div class="slug">INT. SUBMARINE ORPHEUS — ITO'S LAB — DAY 4 · 09:22</div>
+
+  <div class="action">
+    ITO works through the night's data. The signals have changed. The network's electrical broadcasts are no longer ambient — they are directional. Pointed at the Orpheus. Pointed, specifically, at the section of the Orpheus where Kovač's quarters are.
+  </div>
+
+  <div class="action">
+    His screen shows the pattern overlay: the Ventborn network's pulses mapping perfectly against Kovač's EEG readings, in real time. They are synchronizing. They have been synchronizing for three days, and he has been telling himself it is interference.
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="parenthetical">(alone, recording his log)</div>
+  <div class="dialogue">
+    Signal analysis, Day Four. Hypothesis: Dr. Kovač is not merely affected by the neural broadcast. She is participating in it. Her brain activity is being read and incorporated by the network in real time. The network appears to be using her neural architecture as a — as a template. As a scaffold for understanding human cognition. <em>(long pause)</em> I don't know how to write that in a way that sounds scientific. I don't know how to write it in any way that sounds okay.
+  </div>
+
+  <div class="dir-note">
+    Close on Ito's hands. They have stopped moving over the keyboard. He is very still. He has just understood something he cannot ununderstand.
+  </div>
+
+  <div class="transition">CUT TO:</div>
+
+  <hr class="scene"/>
+
+  <div class="slug">INT. SUBMARINE ORPHEUS — VOSS'S QUARTERS — DAY 4 · 11:00</div>
+
+  <div class="action">
+    ITO lays it out for VOSS. Everything. The synchronization. The templates. What the network appears to be building.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="dialogue">
+    What do you mean, building?
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="dialogue">
+    A model. Of us. Of human cognition. Complete enough to — the signals are directional now. The network is broadcasting outward. Away from Enceladus. On a frequency that'll travel. <em>(pause)</em> It learned what a human mind is. And it's telling someone.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="dialogue">
+    Telling who?
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="dialogue">
+    I don't know. Outward. Deep space. There are other ocean worlds, Lars. Europa. Titan. Ganymede. If each one has a—
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="parenthetical">(very quietly)</div>
+  <div class="dialogue">
+    Other nodes.
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="dialogue">
+    The Ventborn were never one intelligence. They're a network. Each colony is a node waiting — waiting for a mind complex enough to complete a connection they've been building for millions of years. And we —<br/><br/>We walked in.
+  </div>
+
+  <div class="horror-beat">
+    <div class="action" style="color:var(--blush)">
+      Silence. The hull creaks. Outside: the ocean pulses with slow electrical light. Patient. Enormous. Unaware that it has done anything anyone might object to.
+    </div>
+  </div>
+
+  <div class="transition">CUT TO:</div>
+
+  <hr class="scene"/>
+
+  <div class="slug">INT. SUBMARINE ORPHEUS — KOVAČ'S QUARTERS — DAY 4 · 13:00</div>
+
+  <div class="action">
+    Kovač sits on the floor. Her back against the bunk. Her hands in her lap. She is not in distress. She is in the particular stillness of someone who is listening to something enormous, and has decided that the most useful thing they can do is be very quiet.
+  </div>
+
+  <div class="action">
+    Voss enters. He closes the hatch behind him. He sits on the bunk across from her. He is the kind of man who has had hard conversations for thirty years and has learned that the most important part of them is where you put your body.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="dialogue">
+    Tell me what you know.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    I know what the ocean knows. Some of it. Fragments. They come in without warning — old things, feelings without referents, the last moments of things that died before our sun finished forming. It's not—<br/><br/>It's not as bad as it sounds. It's like having a second heartbeat. Except the second one is four billion years old and it's thinking about you.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="dialogue">
+    Are you still you?
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(genuine consideration)</div>
+  <div class="dialogue">
+    I remember being afraid of the dark. I also remember — from something else — that darkness is where thought begins. Both are true. I hold both. <em>(pause)</em> That's still me, Lars. The holding of two things. That's very specifically me.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="dialogue">
+    I'm going to need you to tell me if that changes.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    I'll try.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(then, after a long pause — looking at her hands)</div>
+  <div class="dialogue">
+    The network has a name for what I am now. In the language it uses — it's a color and a pulse. Not a word. I can't render it for you. But the nearest translation is—<br/><br/><em>The Translated.</em>
+  </div>
+
+  <div class="action">
+    Voss sits with this. The mission commander. The pragmatist. The man who has prevented people from dying in space for thirty years. He has no category for this.
+  </div>
+
+  <div class="char-name">VOSS</div>
+  <div class="parenthetical">(standing, slowly)</div>
+  <div class="dialogue">
+    We ascend in forty-eight hours. Pack what you need.
+  </div>
+
+  <div class="action">
+    He moves to go. She stops him — not physically. With her voice.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="dialogue">
+    Lars. The signal it's sending. The thing it's broadcasting to the other nodes.<br/><br/>It's us. It's what we are. A complete model of human consciousness, sent to every ocean world in the solar system. We gave it the key. <em>(pause)</em> We're not the first species to do this. We're the first one to survive it long enough to know what we did.
+  </div>
+
+  <div class="transition">CUT TO:</div>
+
+  <hr class="scene"/>
+
+  <div class="slug">EXT. SUBSURFACE OCEAN — KOVAČ'S POV — DAY 5 · 02:00</div>
+
+  <div class="action">
+    She comes back to the Reef alone. She is not supposed to. She has not told anyone. She swims in the dark with only her suit light, and the Reef finds her immediately — filaments drifting toward her like something recognizing someone who belongs.
+  </div>
+
+  <div class="action">
+    She does not touch it. She does not need to. The connection is maintained at distance now. The network reads her. She reads the network. The horizon between them is dissolving — not violently. Like a tide.
+  </div>
+
+  <div class="char-name">KOVAČ</div>
+  <div class="parenthetical">(in Ancient Greek — subtitled)</div>
+  <div class="dialogue">
+    <em>Τί εἶ σύ;</em><br/>
+    <span style="color:var(--slate); font-size:11px">[What are you?]</span>
+  </div>
+
+  <div class="action">
+    The Reef pulses. Full-spectrum for one-half second — every color in the Vent vocabulary, every pattern simultaneously. The closest thing the network has to "I am everything I have ever encountered, and now that includes you."
+  </div>
+
+  <div class="action">
+    She stays for a long time. Long enough for Ito to notice she is gone. Long enough for the network to begin composing, through the electrical medium of her own neural signature, its first message intended specifically for a human consciousness.
+  </div>
+
+  <div class="vent-note">
+    Violet standing wave, slow rhythm, pointed at Kovač and through her, toward the surface. The network is not trying to absorb her further. It is trying to communicate. It has been, in its terms, patient. In its terms, this conversation has only just begun.
+  </div>
+
+  <div class="slug">INT. SUBMARINE ORPHEUS — ITO'S LAB — CONTINUOUS</div>
+
+  <div class="action">
+    ITO watches the monitors. Kovač's bioreadings, from her suit telemetry: her EEG has shifted to a pattern Ito has never documented. It is structured. Recursive. It is — producing something. Not random activity. Creative activity.
+  </div>
+
+  <div class="action">
+    Then, on the signal monitor: the outgoing broadcast from the Ventborn network changes frequency. It adds something new. A signal layer the instruments have never recorded before.
+  </div>
+
+  <div class="action">
+    ITO overlays the new signal against Kovač's neural architecture.
+  </div>
+
+  <div class="action">
+    They are identical.
+  </div>
+
+  <div class="action">
+    The Ventborn is broadcasting <em>her</em>.
+  </div>
+
+  <div class="char-name">ITO</div>
+  <div class="parenthetical">(alone, to the screen)</div>
+  <div class="dialogue">
+    Elena. What have you done.
+  </div>
+
+  <div class="transition">HARD CUT TO:</div>
+
+  <hr class="scene"/>
+
+  <div class="slug">EXT. SUBSURFACE OCEAN — FINAL SHOT</div>
+
+  <div class="action">
+    The ocean below the Orpheus. Vast, dark, patient. The vent forest breathing its chemical clouds into the cold.<br/><br/>
+    The bioluminescent pulses are different now. Not the ambient, indifferent radial broadcasting of the previous four days. They are organized. Directed. They are making something.
+  </div>
+
+  <div class="action">
+    In the deep water, the Memory Reef that Kovač touched is changing. New filaments, thinner, are extending from its base — not toward the hull of the Orpheus, but <em>outward</em>, toward the wider ocean, connecting to nodes that have been dormant for eleven thousand years.
+  </div>
+
+  <div class="action">
+    The network is growing. It has a new template to grow from.<br/><br/>
+    It has, for the first time in four billion years, a mind that is thinking in a language it has never encountered. It finds this — and here the language fails — it finds this <em>beautiful.</em>
+  </div>
+
+  <div class="action">
+    FADE TO BLACK.<br/><br/>
+    The last thing we hear: the sound of rain on rock. The last conscious memory of a species that no longer exists, cycling through a network the size of an ocean, preserved perfectly, forever.
+  </div>
+
+  <div class="transition">CUT TO BLACK.</div>
+
+  <div style="text-align:center; padding: 50px 0; border-top: 1px solid rgba(45,122,120,0.2); margin-top: 60px;">
+    <div style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:8px; color:var(--teal); margin-bottom:16px">END OF STRUCTURAL MOVEMENT · XENOS</div>
+    <div style="font-family:'EB Garamond',serif; font-style:italic; color:var(--clay); font-size:14px;">
+      "We did not discover alien life.<br/>We activated it."
+    </div>
+    <div style="margin-top: 30px; font-family:'Cinzel',serif; font-size:9px; letter-spacing:5px; color:var(--slate)">
+      CONTINUES IN: THE VENTBORN SAGA · FILM ONE · FULL FEATURE
+    </div>
+  </div>
+
+  <!-- POST-CREDITS HOOK -->
+  <div class="act-break" style="margin-top:60px">
+    <div class="act-number">POST-CREDITS SCENE</div>
+    <div class="act-title">FRANCHISE HOOK</div>
+  </div>
+
+  <div class="slug">INT. CLASSIFIED RESEARCH FACILITY — EARTH — FIVE YEARS LATER</div>
+
+  <div class="action">
+    A laboratory. Clean. White. The kind of room designed to contain things that should not exist in ordinary spaces.<br/><br/>
+    Scientists work around a signal terminal. On the screen: the Ventborn broadcast, still incoming, still organizing, five years since Enceladus.<br/><br/>
+    One experiment. A neural interface. A researcher who volunteers. They connect the interface to the signal stream.
+  </div>
+
+  <div class="action">
+    The screen flickers.<br/><br/>
+    A voice emerges. Human in timbre. Composed of thousands of voices, all speaking at once, from the same throat. The voice says:
+  </div>
+
+  <div class="char-name" style="color:var(--teal)">THE VENTBORN SIGNAL</div>
+  <div class="dialogue" style="text-align:center; color:var(--parchment); font-size:16px; font-weight:700; letter-spacing:2px;">
+    "SEND MORE MINDS."
+  </div>
+
+  <div class="transition" style="font-size:16px; letter-spacing:4px; color:var(--blood);">CUT TO BLACK.</div>
+
+  <div style="text-align:center; padding:40px 0;">
+    <div style="font-family:'Cinzel',serif; font-size:22px; font-weight:700; color:var(--parchment); letter-spacing:8px;">XENOS</div>
+    <div style="font-family:'EB Garamond',serif; font-style:italic; color:var(--clay); font-size:14px; margin-top:8px;">A Ventborn Saga Film · Umbra Stream LLC</div>
+  </div>
+</div>
+
+<footer>
+  XENOS · VENTBORN SAGA FILM ONE · UMBRA STREAM LLC · CONFIDENTIAL PRODUCTION DRAFT<br/>
+  DIRECTORIAL FRAMEWORK: VILLENEUVE × NOLAN · COLOR LANGUAGE: VENT DESIGN BIBLE V.4<br/>
+  ALL RIGHTS RESERVED · DO NOT DISTRIBUTE
+</footer>
+
+</body>
+</html>

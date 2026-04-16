@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>XENOS — Cinematic Production Workflow · Luma Labs</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --crimson:    #8B0000;
+    --blood:      #A82020;
+    --rust:       #7A3520;
+    --terracotta: #A0573A;
+    --clay:       #C08060;
+    --blush:      #D4A090;
+    --teal:       #2D7A78;
+    --slate:      #6A8090;
+    --forest:     #1E5248;
+    --midnight:   #1A2540;
+    --void:       #050708;
+    --parchment:  #F2E8D8;
+    --gold:       #C8A050;
+    --terminal:   #00FF88;
+    --terminal-dim: rgba(0,255,136,0.35);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--parchment);
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    background:
+      radial-gradient(ellipse at 15% 15%, rgba(139,0,0,0.3) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 85%, rgba(30,82,72,0.3) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 50%, rgba(26,37,64,0.5) 0%, transparent 70%),
+      var(--void);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .cover > * { position: relative; z-index: 1; }
+
+  .cover-system-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--terminal);
+    border: 1px solid rgba(0,255,136,0.3);
+    padding: 6px 20px;
+    margin-bottom: 50px;
+    text-transform: uppercase;
+  }
+
+  .cover-studio {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 8px;
+    color: var(--slate);
+    margin-bottom: 10px;
+  }
+
+  .cover-film {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 6px;
+    color: var(--clay);
+    margin-bottom: 30px;
+  }
+
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(50px, 10vw, 120px);
+    font-weight: 900;
+    color: transparent;
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--clay) 30%, var(--parchment) 50%, var(--teal) 75%, var(--midnight) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    letter-spacing: 14px;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .cover-doc-title {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: var(--parchment);
+    margin-bottom: 8px;
+  }
+
+  .cover-doc-sub {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--clay);
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 50px;
+    line-height: 1.7;
+  }
+
+  .cover-rule {
+    width: 280px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blood), var(--teal), transparent);
+    margin: 0 auto 40px;
+  }
+
+  .cover-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 600px;
+    width: 100%;
+    margin-bottom: 40px;
+  }
+
+  .meta-item {
+    border: 1px solid rgba(45,122,120,0.2);
+    padding: 16px 20px;
+    text-align: center;
+  }
+
+  .meta-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--teal);
+    margin-bottom: 6px;
+  }
+
+  .meta-value {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--parchment);
+    letter-spacing: 2px;
+  }
+
+  /* ── PAGE ── */
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 60px 40px;
+  }
+
+  /* ── CHAPTER BREAKS ── */
+  .chapter {
+    padding: 100px 40px 60px;
+    text-align: center;
+    border-top: 1px solid rgba(45,122,120,0.15);
+  }
+
+  .chapter-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--terminal);
+    margin-bottom: 20px;
+  }
+
+  .chapter-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(28px, 4vw, 50px);
+    font-weight: 700;
+    color: var(--parchment);
+    letter-spacing: 4px;
+    margin-bottom: 12px;
+  }
+
+  .chapter-sub {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 19px;
+    color: var(--clay);
+  }
+
+  /* ── WORKFLOW PIPELINE ── */
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    margin: 40px 0;
+  }
+
+  .pipe-stage {
+    background: rgba(45,122,120,0.08);
+    border: 1px solid rgba(45,122,120,0.2);
+    padding: 20px 14px;
+    text-align: center;
+    position: relative;
+  }
+
+  .pipe-stage::after {
+    content: '→';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--teal);
+    font-size: 14px;
+    z-index: 2;
+  }
+
+  .pipe-stage:last-child::after { display: none; }
+
+  .pipe-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 20px;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+
+  .pipe-name {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--parchment);
+    line-height: 1.4;
+  }
+
+  /* ── PROMPT CARDS ── */
+  .prompt-section {
+    margin: 50px 0;
+    border: 1px solid rgba(45,122,120,0.2);
+    overflow: hidden;
+  }
+
+  .prompt-header {
+    background: rgba(8,10,16,0.8);
+    border-bottom: 1px solid rgba(45,122,120,0.2);
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .prompt-scene {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--parchment);
+  }
+
+  .prompt-tags {
+    display: flex;
+    gap: 8px;
+  }
+
+  .tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border: 1px solid;
+  }
+
+  .tag-horror { color: var(--blood); border-color: var(--blood); }
+  .tag-scifi { color: var(--teal); border-color: var(--teal); }
+  .tag-psychology { color: var(--gold); border-color: var(--gold); }
+
+  .prompt-body { padding: 24px; }
+
+  .prompt-context {
+    font-size: 15px;
+    color: rgba(242,232,216,0.75);
+    margin-bottom: 20px;
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  /* ── TERMINAL BLOCKS ── */
+  .terminal {
+    background: #020405;
+    border: 1px solid rgba(0,255,136,0.2);
+    padding: 20px 24px;
+    margin: 16px 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    line-height: 1.85;
+    color: rgba(0,255,136,0.85);
+    position: relative;
+  }
+
+  .terminal::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -1px;
+    left: 20px;
+    background: var(--void);
+    padding: 0 8px;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--terminal);
+    border: 1px solid rgba(0,255,136,0.3);
+    border-bottom: 1px solid var(--void);
+  }
+
+  .terminal .key { color: var(--gold); }
+  .terminal .val { color: rgba(242,232,216,0.9); }
+  .terminal .comment { color: rgba(0,255,136,0.35); }
+
+  /* ── FORMULA BOX ── */
+  .formula {
+    background: rgba(139,0,0,0.06);
+    border: 1px solid rgba(139,0,0,0.25);
+    padding: 20px 28px;
+    margin: 20px 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--blush);
+    line-height: 1.9;
+  }
+
+  .formula::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--blood);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(139,0,0,0.2);
+  }
+
+  /* ── HEADERS ── */
+  h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--parchment);
+    letter-spacing: 4px;
+    margin: 60px 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(45,122,120,0.3);
+  }
+
+  h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--clay);
+    letter-spacing: 3px;
+    margin: 36px 0 14px;
+    text-transform: uppercase;
+  }
+
+  p { margin-bottom: 18px; }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+
+  th {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--teal);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(45,122,120,0.4);
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(45,122,120,0.1);
+    vertical-align: top;
+    line-height: 1.65;
+    color: rgba(242,232,216,0.85);
+  }
+
+  tr:hover td { background: rgba(45,122,120,0.04); }
+
+  /* ── CALLOUT ── */
+  .callout-gold {
+    border-left: 4px solid var(--gold);
+    padding: 18px 24px;
+    background: rgba(200,160,80,0.05);
+    margin: 28px 0;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--parchment);
+  }
+
+  .callout-teal {
+    border-left: 4px solid var(--teal);
+    padding: 18px 24px;
+    background: rgba(45,122,120,0.05);
+    margin: 28px 0;
+  }
+
+  /* ── PRINCIPLE CARDS ── */
+  .principle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 30px 0;
+  }
+
+  .principle-card {
+    border: 1px solid rgba(106,128,144,0.2);
+    padding: 24px;
+    position: relative;
+  }
+
+  .principle-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--teal);
+  }
+
+  .pc-villeneuve::before { background: var(--blood); }
+  .pc-nolan::before { background: var(--teal); }
+  .pc-shared::before { background: var(--gold); }
+
+  .principle-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+
+  .pc-villeneuve .principle-label { color: var(--blood); }
+  .pc-nolan .principle-label { color: var(--teal); }
+  .pc-shared .principle-label { color: var(--gold); }
+
+  .principle-name {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: var(--parchment);
+    margin-bottom: 10px;
+  }
+
+  .principle-body {
+    font-size: 14px;
+    color: rgba(242,232,216,0.78);
+    line-height: 1.7;
+  }
+
+  /* ── CHECKLIST ── */
+  .checklist {
+    list-style: none;
+    margin: 20px 0;
+  }
+
+  .checklist li {
+    padding: 10px 0;
+    padding-left: 28px;
+    border-bottom: 1px solid rgba(45,122,120,0.1);
+    position: relative;
+    font-size: 15px;
+    color: rgba(242,232,216,0.85);
+  }
+
+  .checklist li::before {
+    content: '□';
+    position: absolute;
+    left: 0;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--teal);
+    font-size: 14px;
+  }
+
+  /* ── RATIO CARDS ── */
+  .ratio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .ratio-card {
+    border: 1px solid rgba(45,122,120,0.2);
+    padding: 20px;
+    text-align: center;
+    background: rgba(45,122,120,0.04);
+  }
+
+  .ratio-num {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    color: var(--teal);
+    margin-bottom: 6px;
+  }
+
+  .ratio-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--slate);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 60px 40px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: rgba(0,255,136,0.25);
+    border-top: 1px solid rgba(45,122,120,0.1);
+    margin-top: 80px;
+  }
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+
+<!-- ═══════════════════ COVER ═══════════════════ -->
+<div class="cover">
+  <div class="cover-system-badge">▶ LUMA LABS PRODUCTION PIPELINE · ACTIVE</div>
+  <div class="cover-studio">UMBRA STREAM LLC</div>
+  <div class="cover-film">VENTBORN SAGA · FILM ONE</div>
+  <div class="cover-title">XENOS</div>
+  <div class="cover-doc-title">CINEMATIC PRODUCTION WORKFLOW</div>
+  <div class="cover-doc-sub">Architecture & Prompt Engineering System<br/>Villeneuve × Nolan Directorial Style · Production-Ready · Poetic · Symbolic · Cinematic<br/>Prepared for Luma Labs Production Pipeline</div>
+  <div class="cover-rule"></div>
+  <div class="cover-meta-grid">
+    <div class="meta-item">
+      <div class="meta-label">Directorial Framework</div>
+      <div class="meta-value">VILLENEUVE × NOLAN</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Genre</div>
+      <div class="meta-value">MYTHOLOGICAL PSY-HORROR</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Runtime</div>
+      <div class="meta-value">50 MIN / 128 MIN FEATURE</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Pipeline Target</div>
+      <div class="meta-value">LUMA LABS AI VIDEO</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ I. SYSTEM OVERVIEW ═══════════════════════════ -->
+<div class="chapter">
+  <div class="chapter-tag">MODULE 01 // SYSTEM ARCHITECTURE</div>
+  <div class="chapter-title">WORKFLOW OVERVIEW</div>
+  <div class="chapter-sub">The Production Pipeline from Script to Shot</div>
+</div>
+
+<div class="page">
+
+  <p>This document is the operational framework for translating <em>XENOS</em> from screenplay into production-ready visual sequences using Luma Labs AI video generation, guided by the Villeneuve × Nolan directorial philosophy. It is organized as a modular prompt engineering system: each scene type has a canonical prompt architecture that can be adapted to specific shots.</p>
+
+  <h2>FIVE-STAGE PIPELINE</h2>
+
+  <div class="pipeline">
+    <div class="pipe-stage"><div class="pipe-num">01</div><div class="pipe-name">SCRIPT BEAT ANALYSIS</div></div>
+    <div class="pipe-stage"><div class="pipe-num">02</div><div class="pipe-name">SHOT ARCHITECTURE</div></div>
+    <div class="pipe-stage"><div class="pipe-num">03</div><div class="pipe-name">PROMPT ENGINEERING</div></div>
+    <div class="pipe-stage"><div class="pipe-num">04</div><div class="pipe-name">LUMA GENERATION</div></div>
+    <div class="pipe-stage"><div class="pipe-num">05</div><div class="pipe-name">POST & ASSEMBLY</div></div>
+  </div>
+
+  <h3>Stage 01 — Script Beat Analysis</h3>
+  <p>Every scene is broken into its constituent beats: the smallest unit of dramatic action. Each beat receives a horror register classification (Awe / Intimate Dread / Sacred Dread / Philosophical / Cosmic), a color palette assignment (Warm Register / Cool Register / Both Bleeding), and a Vent Language annotation if applicable.</p>
+
+  <h3>Stage 02 — Shot Architecture</h3>
+  <p>Each beat is translated into a shot type. The framework uses nine canonical shot types (detailed in Module 03). Shot type selection follows Villeneuve × Nolan principles: the camera's relationship to the subject is always narrative, never merely compositional.</p>
+
+  <h3>Stage 03 — Prompt Engineering</h3>
+  <p>Each shot receives a master prompt using the XENOS Prompt Formula. Prompts are layered: Subject + Environment + Palette + Directorial Style + Technical Specifications + Horror Register. Order matters. Luma Labs weights the beginning of a prompt most heavily.</p>
+
+  <h3>Stage 04 — Luma Labs Generation</h3>
+  <p>Generated sequences are produced at highest available quality settings. Each sequence should be generated 3× minimum and the best selected. The Villeneuve standard: if the shot does not make you feel something before you understand it, generate again.</p>
+
+  <h3>Stage 05 — Post & Assembly</h3>
+  <p>Color grading locks the dual palette system in post. The Ventborn color temperature (2800K–3200K teal-cool) and human color temperature (3800K–4200K warm-rust) are never mixed within a single frame until Ghost Bleed sequences, where they deliberately contaminate each other.</p>
+
+  <div class="callout-teal">
+    <strong style="color:var(--teal); font-family:'Cinzel',serif; letter-spacing:2px;">CORE PRINCIPLE:</strong> Every prompt in this system serves one master rule — the audience must feel before they understand. If a generated sequence produces a recognizable emotion before the content of the shot is processed, it is working correctly.
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════ II. PROMPT FORMULA ═══════════════════════════ -->
+<div class="chapter">
+  <div class="chapter-tag">MODULE 02 // PROMPT ENGINEERING</div>
+  <div class="chapter-title">THE XENOS PROMPT FORMULA</div>
+  <div class="chapter-sub">Canonical Architecture for Luma Labs Generation</div>
+</div>
+
+<div class="page">
+
+  <h2>MASTER PROMPT STRUCTURE</h2>
+
+  <div class="formula" data-label="XENOS PROMPT FORMULA — ALL SHOT TYPES">
+    [SUBJECT] [ACTION/STATE] — [ENVIRONMENT] — [COLOR REGISTER] — [HORROR REGISTER] — [DIRECTORIAL STYLE] — [MOVEMENT] — [TECHNICAL SPEC] — [SOUND NOTE]
+  </div>
+
+  <h3>Layer 1 — Subject</h3>
+  <p>Describe the primary subject with precision. Include physical state, emotional register, and any Vent Language markers visible on the body. Never use abstract emotional descriptors — translate emotion into physical specificity.</p>
+
+  <div class="terminal" data-label="SUBJECT EXAMPLES">
+    <span class="comment"># WEAK — abstract</span><br/>
+    <span class="key">subject:</span> <span class="val">"frightened scientist"</span><br/><br/>
+    <span class="comment"># STRONG — physical specificity</span><br/>
+    <span class="key">subject:</span> <span class="val">"female scientist in deep-sea dive suit, left hand extended palm-up toward bioluminescent structure, body still, breathing rate visible through suit chest panel, irises showing slow electrical pulse barely visible in reflected alien light"</span>
+  </div>
+
+  <h3>Layer 2 — Environment</h3>
+  <p>Establish the physical world. Ventborn environments require geological specificity — the ocean is not simply "dark water," it is a specific temperature, depth, mineral composition. This specificity translates into visual texture.</p>
+
+  <div class="terminal" data-label="ENVIRONMENT EXAMPLES">
+    <span class="comment"># VENTBORN OCEAN ENVIRONMENT — base template</span><br/>
+    <span class="key">env:</span> <span class="val">"Enceladus subsurface ocean, absolute darkness except probe and bioluminescent sources, hydrothermal vent forest visible at mid-ground, mineral towers 200 meters tall, chemical clouds drifting upward from vent apertures, particle scatter in water column catching light sources, 3.8km depth, water temperature 2°C, pressure 380 atmospheres"</span><br/><br/>
+    <span class="comment"># HUMAN ENVIRONMENT — base template</span><br/>
+    <span class="key">env:</span> <span class="val">"submarine interior, narrow functional hull, warm amber emergency lighting mixed with cold blue instrument panels, condensation on metal surfaces, the particular claustrophobia of a space designed for efficiency not comfort, ocean sounds through hull 2 meters away"</span>
+  </div>
+
+  <h3>Layer 3 — Color Register</h3>
+  <p>Specify the palette assignment. Always name specific hex values or precise color descriptions — never "warm" or "cool" without specificity.</p>
+
+  <div class="terminal" data-label="COLOR REGISTER SPECIFICATIONS">
+    <span class="comment"># PALETTE A — HUMAN/WARM</span><br/>
+    <span class="key">palette:</span> <span class="val">"deep crimson #8B0000, rust-terracotta #A0573A, clay #C08060, blush #D4A090, all other tones desaturated toward parchment"</span><br/><br/>
+    <span class="comment"># PALETTE B — VENTBORN/COOL</span><br/>
+    <span class="key">palette:</span> <span class="val">"deep teal #2D7A78, slate blue #6A8090, forest green #1E5248, midnight blue #1A2540, void near-black #080A10"</span><br/><br/>
+    <span class="comment"># GHOST BLEED — BOTH CONTAMINATING</span><br/>
+    <span class="key">palette:</span> <span class="val">"warm rust and teal bleeding into each other at edges, no clean separation between registers, the colors infecting each other the way memories infect dreams"</span>
+  </div>
+
+  <h3>Layer 4 — Horror Register</h3>
+  <p>The five horror registers of <em>XENOS</em> each require different visual grammar. Specify the register explicitly — it controls composition, movement, and depth of field choices.</p>
+
+  <table>
+    <thead><tr><th>Register</th><th>Visual Grammar</th><th>Depth of Field</th><th>Camera Movement</th></tr></thead>
+    <tbody>
+      <tr><td><strong>AWE</strong></td><td>Scale disparity, humans small against vast environments, reverence not terror</td><td>Deep — all in focus, scale visible</td><td>Slow, continuous, pilgrim-pace</td></tr>
+      <tr><td><strong>INTIMATE DREAD</strong></td><td>Close, constrained, the body as the horror site — internal not external</td><td>Shallow — subject isolated against soft background</td><td>Static or barely perceptible</td></tr>
+      <tr><td><strong>SACRED DREAD</strong></td><td>The forbidden made beautiful, the dangerous made luminous, horror arriving as blessing</td><td>Deep but selective — specific elements sharp</td><td>Slow push toward danger, not retreat</td></tr>
+      <tr><td><strong>PHILOSOPHICAL</strong></td><td>Characters in profile or three-quarter, environmental vastness visible, conversation in existential space</td><td>Medium — both figure and environment legible</td><td>Static. The world moves. The humans are still.</td></tr>
+      <tr><td><strong>COSMIC</strong></td><td>Human scale disappears entirely, the frame is filled with the alien, no safe corner to look at</td><td>Deep, extreme — everything in terrible focus</td><td>Camera pulls back until human disappears</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Layer 5 — Directorial Style</h3>
+
+  <div class="terminal" data-label="DIRECTORIAL STYLE — CANONICAL DESCRIPTORS">
+    <span class="comment"># VILLENEUVE SIGNATURE</span><br/>
+    <span class="key">style:</span> <span class="val">"Denis Villeneuve cinematic style, static composed frames, natural light supplemented by single source, contemplative pacing, faces as primary dramatic surface, long takes, restrained camera movement, landscape as emotional state, Arrival and Blade Runner 2049 aesthetic"</span><br/><br/>
+    <span class="comment"># NOLAN SIGNATURE</span><br/>
+    <span class="key">style:</span> <span class="val">"Christopher Nolan cinematic style, IMAX large-format visual weight, practical effects philosophy, temporal complexity visible in composition, Interstellar and Dunkirk aesthetic, sound design as primary horror tool, information withheld structurally"</span><br/><br/>
+    <span class="comment"># COMBINED XENOS FRAMEWORK</span><br/>
+    <span class="key">style:</span> <span class="val">"Villeneuve × Nolan hybrid — Villeneuve's patience and face-centered intimacy combined with Nolan's structural scale and sound-first horror philosophy, cinematic photorealistic, 2.39:1 anamorphic aspect ratio, IMAX quality, grain texture present, color grading in post per XENOS dual-palette bible"</span>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════ III. SCENE-BY-SCENE PROMPTS ═══════════════════════════ -->
+<div class="chapter">
+  <div class="chapter-tag">MODULE 03 // SHOT LIBRARY</div>
+  <div class="chapter-title">SCENE-BY-SCENE PROMPT LIBRARY</div>
+  <div class="chapter-sub">Production-Ready Prompts for XENOS Key Sequences</div>
+</div>
+
+<div class="page">
+
+  <!-- SCENE 01 -->
+  <div class="prompt-section">
+    <div class="prompt-header">
+      <div class="prompt-scene">SEQUENCE 01 — THE COLD OPEN · Probe Descent</div>
+      <div class="prompt-tags">
+        <span class="tag tag-horror">AWE</span>
+        <span class="tag tag-scifi">SCI-FI</span>
+      </div>
+    </div>
+    <div class="prompt-body">
+      <div class="prompt-context">The nuclear probe descends through Enceladus ice and enters the subsurface ocean. The first sight of the hydrothermal vent forest. The Ventborn organism enters the light for the first time.</div>
+
+      <div class="terminal" data-label="SHOT 01A — ICE DESCENT · EXTERIOR PROBE">
+Nuclear drilling probe descending through ancient blue-white ice tunnel, 2km depth, probe light illuminating textured ice walls, extreme depth-of-field showing kilometers ahead and behind, particle scatter in probe's light cone, vent steam rising from below in volumetric columns, deep void at tunnel's end — Villeneuve Nolan cinematic style, 2.39:1 anamorphic, IMAX quality, no color saturation, desaturated blue-white palette transitioning to void black, holy-dread atmospheric horror, pilgrim camera movement — no score, sub-bass frequency only, hull pressure creaking
+      </div>
+
+      <div class="terminal" data-label="SHOT 01B — PLUNGE INTO OCEAN · PROBE POV">
+Probe camera POV plunging into absolute black subsurface ocean, light activates illuminating particle-rich water column, particles drift like ash in abandoned cathedral, hydrothermal vent towers materializing from darkness — mineral lattice structures 150-200 meters tall, black smoker chimneys pouring chemical clouds, bioluminescent filaments drifting between structures — deep teal #2D7A78 palette against void black #080A10, sacred-dread horror register, Villeneuve reverent framing, IMAX photorealistic, volumetric particle scatter, god-rays through particulate water — sub-bass pressure, no music
+      </div>
+
+      <div class="terminal" data-label="SHOT 01C — FIRST ORGANISM · ENCOUNTER">
+Alien organism entering probe light field from darkness — mineral lattice structure with bioluminescent filaments, not animal not plant — existing in no biological category, filaments pulse deep blue in slow rhythm, organism freezes as light touches it — the stillness of something noticing light for the first time in 40,000 years — extreme close-up and extreme wide simultaneously through depth-of-field shift, teal #2D7A78 bioluminescence against void, horror register: sacred dread approaching awe, Villeneuve static frame, photorealistic alien biology, beautiful before frightening — silence
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 02 -->
+  <div class="prompt-section">
+    <div class="prompt-header">
+      <div class="prompt-scene">SEQUENCE 02 — FIRST CONTACT · Kovač Touches the Reef</div>
+      <div class="prompt-tags">
+        <span class="tag tag-horror">SACRED DREAD</span>
+        <span class="tag tag-psychology">PSYCHOLOGICAL</span>
+      </div>
+    </div>
+    <div class="prompt-body">
+      <div class="prompt-context">Kovač swims to the Memory Reef. The filaments attend her. Contact. The cut to white.</div>
+
+      <div class="terminal" data-label="SHOT 02A — APPROACH · KOVAČ SWIMMING">
+Female scientist in deep-sea dive suit swimming through hydrothermal vent forest toward Memory Reef — bioluminescent reef structure 30 meters across visible ahead, filaments drifting toward swimmer as she approaches, filaments slow their motion in her presence — the attending of something noticing a specific individual — dim probe light only, Villeneuve composition, figure small against vast reef structure, warm suit lighting against cool alien bioluminescence, color contamination at edges where registers meet, sacred-dread horror, 2.39:1 IMAX quality, slow push toward danger
+      </div>
+
+      <div class="terminal" data-label="SHOT 02B — CONTACT MOMENT · EXTREME CLOSE-UP">
+Extreme close-up: gloved hand reaching toward bioluminescent alien filament, moment before contact, both elements occupying frame with equal weight — gloved hand warm clay #C08060 through suit material, filament deep teal #2D7A78 pulsing amber at its approach point, depth of field shallow isolating hand and filament against soft dark water background, Villeneuve static frame — the sacred horror of the threshold, photorealistic, IMAX detail, entire film's meaning contained in this frame
+      </div>
+
+      <div class="terminal" data-label="SHOT 02C — ABSORPTION INTERIOR · NETWORK POV">
+Abstract interior: POV inside alien neural network — explosion of white light from void, electrical signals forming neural architecture from pure mathematics, ancient memory data flowing past as texture not image — the smell of rain on rock translated to color temperature, thousands of presences simultaneously, not voices not faces but weights and durations — warm amber-gold light cores surrounded by teal network filaments, Nolan Interstellar tesseract aesthetic but biological not mechanical, the horror of total reception — white over black, presence not absence — building to full white frame
+      </div>
+
+      <div class="terminal" data-label="SHOT 02D — CUT TO WHITE">
+Pure white frame — not fade to white but instantaneous cut — held for 3 seconds — the white of total presence, not absence — then slowly resolving through white-out to medical bay interior, cold blue lighting, Kovač supine on exam table, eyes open, looking at ceiling — the transition from white to blue-white is the film's tonal shift from first to second act, Villeneuve patient framing
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 03 -->
+  <div class="prompt-section">
+    <div class="prompt-header">
+      <div class="prompt-scene">SEQUENCE 03 — THE FILAMENT REVEAL · Medical Bay</div>
+      <div class="prompt-tags">
+        <span class="tag tag-horror">INTIMATE DREAD</span>
+        <span class="tag tag-psychology">PSYCHOLOGICAL</span>
+      </div>
+    </div>
+    <div class="prompt-body">
+      <div class="prompt-context">When the emergency light pulses red, Kovač's irises show the Ventborn carrier frequency. The filaments are visible under her skin. No one but the audience sees.</div>
+
+      <div class="terminal" data-label="SHOT 03A — EYE REVEAL · EXTREME MACRO">
+Extreme macro close-up: female eye in medical bay light — iris shows slow electrical pulse pattern cycling, 1Hz frequency, barely visible in normal white light — when red emergency light pulses, iris pattern becomes briefly legible — not glow, not supernatural: flicker — like something counting — bioluminescent filaments barely visible under eyelid skin — beautiful and wrong — Villeneuve intimate frame, shallow depth of field, rust-crimson and teal color contamination, intimate dread horror register, IMAX macro detail, photorealistic human biology
+      </div>
+
+      <div class="terminal" data-label="SHOT 03B — FOREARM FILAMENTS · VISIBLE UNDER SKIN">
+Close-up: female forearm under emergency light — fine bioluminescent filaments visible under skin, not glowing but threaded — like circuit diagram under translucent paper — dormant in white light, faintly legible under red emergency pulse — the horror of subtle wrongness, beautiful before frightening, Villeneuve restraint, color: warm skin tones with teal #2D7A78 filament traces, intimate dread register, shallow depth of field, photorealistic, IMAX quality — no sound cue, no score change — the horror of silence around this discovery
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 04 -->
+  <div class="prompt-section">
+    <div class="prompt-header">
+      <div class="prompt-scene">SEQUENCE 04 — OBSERVATION WINDOW · Kovač & Osei</div>
+      <div class="prompt-tags">
+        <span class="tag tag-horror">PHILOSOPHICAL</span>
+        <span class="tag tag-psychology">PSYCHOLOGICAL</span>
+      </div>
+    </div>
+    <div class="prompt-body">
+      <div class="prompt-context">0300 hours. Two women at the observation window. The ocean thinks behind them. Osei sees the filaments for the first time.</div>
+
+      <div class="terminal" data-label="SHOT 04 — OBSERVATION WINDOW · DOUBLE PORTRAIT">
+Two women standing in profile at large circular submarine observation window — 0300 hours night cycle, cold blue corridor lighting, window reveals deep ocean bioluminescent pulses beyond — Ventborn network active and visible at distance — women's faces in three-quarter toward window, their reflections overlaid on alien light through glass, static camera medium-wide framing — the philosophical horror register — humans as still points, alien as dynamic — Villeneuve composition, color: human warm clay and rust on figures, cool teal beyond window, slow bioluminescent pulse in background — long take, no movement
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 05 -->
+  <div class="prompt-section">
+    <div class="prompt-header">
+      <div class="prompt-scene">SEQUENCE 05 — THE BROADCAST · Cosmic Finale</div>
+      <div class="prompt-tags">
+        <span class="tag tag-horror">COSMIC</span>
+        <span class="tag tag-scifi">SCI-FI</span>
+      </div>
+    </div>
+    <div class="prompt-body">
+      <div class="prompt-context">Kovač alone before the Reef. The full-spectrum pulse. The network broadcasts her across the solar system. The ocean worlds awaken.</div>
+
+      <div class="terminal" data-label="SHOT 05A — KOVAČ BEFORE THE REEF · WIDE">
+Lone female figure in dive suit before massive alien Memory Reef structure — reef pulsing full-spectrum color simultaneously: crimson #8B0000, teal #2D7A78, amber #D4820A, violet #7040A0, silver — all Vent language colors firing at once — the network saying: this is everything we know how to say, at once — human figure tiny against 30-meter structure, volumetric light rays through water, Villeneuve awe framing extreme wide, IMAX scale, horror register: cosmic, color: full spectrum explosion against void black ocean
+      </div>
+
+      <div class="terminal" data-label="SHOT 05B — SOLAR SYSTEM OVERVIEW · SPACE">
+Deep space overview — Enceladus moon below Saturn's rings visible — signal wave expanding outward from moon in all directions, represented as neural pulse pattern at astronomical scale — Europa, Titan, Ganymede visible as distant points — each activating in sequence, their ocean shells glowing teal from within as Ventborn nodes wake — the horror of scale, the network becoming visible as a structure larger than the solar system — Nolan Interstellar scale, cold space palette midnight #1A2540 and void #080A10, teal #2D7A78 signal nodes, photorealistic space VFX, IMAX quality
+      </div>
+
+      <div class="terminal" data-label="SHOT 05C — FINAL OCEAN SHOT · ENCELADUS">
+Return to Enceladus subsurface ocean — vent forest in deep background — Memory Reef in foreground with new filament growth extending outward from base toward other reef nodes, connecting dormant structures 40,000 years unconnected — the network growing, evolving, incorporating — filaments pulsing in human neural rhythm patterns for first time — the horror of being recognized, being remembered, being made permanent — deep teal #2D7A78 and gold-amber #C8A050 on new filaments, void black beyond, Villeneuve wide contemplative framing, fade to black slowly, sound: rain on rock — last thing we hear
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════ IV. DIRECTORIAL PRINCIPLES ═══════════════════════════ -->
+<div class="chapter">
+  <div class="chapter-tag">MODULE 04 // DIRECTORIAL FRAMEWORK</div>
+  <div class="chapter-title">VILLENEUVE × NOLAN PRINCIPLES</div>
+  <div class="chapter-sub">Applied to Luma Labs AI Generation</div>
+</div>
+
+<div class="page">
+
+  <div class="principle-grid">
+    <div class="principle-card pc-villeneuve">
+      <div class="principle-label">VILLENEUVE · PRINCIPLE 01</div>
+      <div class="principle-name">The Reverent Camera</div>
+      <div class="principle-body">The camera enters every space as if it knows it is in the presence of something larger than its understanding. Not awe — care. No motivated camera movement except toward danger. Never away. The camera commits.</div>
+    </div>
+    <div class="principle-card pc-villeneuve">
+      <div class="principle-label">VILLENEUVE · PRINCIPLE 02</div>
+      <div class="principle-name">The Static Face</div>
+      <div class="principle-body">When conveying inner catastrophe: camera comes closer, does less. No cutting away. No score instruction. The face is the drama. Prompt specification: "static camera, extreme close-up face, long take, no movement, ambient light only."</div>
+    </div>
+    <div class="principle-card pc-villeneuve">
+      <div class="principle-label">VILLENEUVE · PRINCIPLE 03</div>
+      <div class="principle-name">Scale as Meaning</div>
+      <div class="principle-body">Human figures in Ventborn environments are always compositionally small. The environment is always larger. This is never incidental — it is the theme made visible. Prompt: "figure small in wide frame, environment dominant, deep focus."</div>
+    </div>
+    <div class="principle-card pc-nolan">
+      <div class="principle-label">NOLAN · PRINCIPLE 01</div>
+      <div class="principle-name">Sound Before Image</div>
+      <div class="principle-body">The horror of a sequence begins before the image does. The sub-bass Ventborn frequency, the Ghost Bleed tonal cluster — these appear in the audio track before they appear visually. Always specify sound design in prompts even when generating video.</div>
+    </div>
+    <div class="principle-card pc-nolan">
+      <div class="principle-label">NOLAN · PRINCIPLE 02</div>
+      <div class="principle-name">Structural Withholding</div>
+      <div class="principle-body">Information is withheld in image as well as narrative. The filaments in Kovač's arm are visible but not commented upon. The Vent language patterns are present before their meaning is explained. Show the evidence; let the audience construct the theory.</div>
+    </div>
+    <div class="principle-card pc-shared">
+      <div class="principle-label">SHARED · PRINCIPLE 01</div>
+      <div class="principle-name">Practical Scale</div>
+      <div class="principle-body">Even when generating AI sequences, the visual language should suggest practical effects. Real materials. Real weight. The ocean is not a render — it is water, with pressure and particulate matter. Prompt: "practical-effects aesthetic, photorealistic, real-world physical behavior."</div>
+    </div>
+  </div>
+
+  <h2>CAMERA MOVEMENT VOCABULARY</h2>
+
+  <table>
+    <thead><tr><th>Movement Type</th><th>Prompt Descriptor</th><th>XENOS Context</th></tr></thead>
+    <tbody>
+      <tr><td>Pilgrim Push</td><td>"slow continuous camera push toward subject, reverent pace, no handheld shake, dolly smooth"</td><td>All approaches to the Reef. Toward danger. Never retreat.</td></tr>
+      <tr><td>Witness Hold</td><td>"static camera, locked frame, long take, no movement for duration of scene"</td><td>Ghost Bleed reveals. Kovač's face during Translation. The observation window scene.</td></tr>
+      <tr><td>Structural Pull</td><td>"camera pulls slowly back from subject until figure is compositionally small, stops"</td><td>Cosmic horror moments. The network's true scale becomes legible.</td></tr>
+      <tr><td>God's Eye</td><td>"overhead top-down frame, directly above, figures seen as abstract patterns"</td><td>Ventborn POV sequences. The network seeing humans from above.</td></tr>
+      <tr><td>Memory Drift</td><td>"slow unmotivated drift, 0.5x speed, camera floating without anchor, dreamlike"</td><td>Ghost Bleed interior sequences. Memory that has no perspective.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>TECHNICAL SPECIFICATIONS</h2>
+
+  <div class="ratio-grid">
+    <div class="ratio-card"><div class="ratio-num">2.39:1</div><div class="ratio-label">ANAMORPHIC ASPECT RATIO</div></div>
+    <div class="ratio-card"><div class="ratio-num">24fps</div><div class="ratio-label">FRAME RATE · ALL SEQUENCES</div></div>
+    <div class="ratio-card"><div class="ratio-num">IMAX</div><div class="ratio-label">TARGET QUALITY STANDARD</div></div>
+    <div class="ratio-card"><div class="ratio-num">150mm</div><div class="ratio-label">PORTRAIT LENS EQUIVALENT</div></div>
+    <div class="ratio-card"><div class="ratio-num">14mm</div><div class="ratio-label">ENVIRONMENT LENS EQUIVALENT</div></div>
+    <div class="ratio-card"><div class="ratio-num">2800K</div><div class="ratio-label">VENTBORN COLOR TEMP</div></div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════ V. GHOST BLEED SEQUENCES ═══════════════════════════ -->
+<div class="chapter">
+  <div class="chapter-tag">MODULE 05 // GHOST BLEED PIPELINE</div>
+  <div class="chapter-title">GHOST BLEED SEQUENCES</div>
+  <div class="chapter-sub">The Five Stages — Visual & Prompt Architecture</div>
+</div>
+
+<div class="page">
+
+  <p>Ghost Bleed sequences require special prompt architecture because they represent the overlap between two visual registers — human and Ventborn — which are otherwise kept strictly separate. The following prompts are calibrated for each stage.</p>
+
+  <div class="terminal" data-label="STAGE ONE — ATMOSPHERIC INTRUSION · Osei Sleep Scene">
+Female scientist asleep in submarine bunk, night cycle blue light, face in profile — micro-expression shift crossing sleeping face: not nightmare, not peace — something landing — a single tear tracks from outer eye without waking her — the camera does not editorialize, holds static for 20 seconds — warm clay skin against cold blue hull — in sound design only: distant tonal cluster, barely audible, below music threshold — intimate dread register, Villeneuve static witness, no musical commentary
+  </div>
+
+  <div class="terminal" data-label="STAGE TWO — FALSE MEMORY · Kovač Describing">
+Medium close-up: scientist at table, speaking with calm certainty about a memory she believes is hers — detail-rich narration — another character's expression slowly changes as they realize the account cannot be real — camera holds on speaking face, then cuts to listening face: the horror is in the listener's comprehension before the speaker's — Villeneuve two-shot protocol, static camera, warm palette on subject, cool contamination entering from edges as memory progresses
+  </div>
+
+  <div class="terminal" data-label="STAGE THREE — SENSORY BLEED · The Sound No One Hears">
+Interior submarine corridor — scientist stops mid-movement, head tilting slightly to one side — listening to sound the audience also hears as ambient room tone — a repeated tonal cluster in the 40Hz range — camera follows scientist's gaze to a corner of the room, holds on empty corner for 5 seconds — when another crew member confirms they hear nothing, the frame becomes unreliable retroactively — sound design primary horror, visual restrained, Nolan information-withholding principle
+  </div>
+
+  <div class="terminal" data-label="STAGE FOUR — BORROWED GRIEF · Kovač Weeping">
+Extreme close-up: female scientist's face — weeping without apparent cause, the grief sourceless and enormous — tears from an emotion that has no object in the current moment — the grief of billions of absorbed minds, many absorbed at moment of extinction — the camera holds without comment, without score — the audience is asked to feel the grief without understanding it yet — then, in narration only, the character says: "I am grieving a species I have never heard of" — intimate dread becoming philosophical — Villeneuve maximum restraint
+  </div>
+
+  <div class="terminal" data-label="STAGE FIVE — SIGNAL LOCK · Kovač at Full Translation">
+Medium shot: scientist standing in corridor, speaking with a colleague — then shifting mid-sentence from first-person singular to first-person plural without registering the shift — "I think we should" — the other person freezes — the scientist notices their own pronoun only from the other's reaction — looks at their own hands — Vent language filaments now visible in normal light — Villeneuve static witness frame, no movement, color: both registers simultaneously present in same frame for first time — the moment of dual existence made visible
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════ VI. PRODUCTION CHECKLIST ═══════════════════════════ -->
+<div class="chapter">
+  <div class="chapter-tag">MODULE 06 // QUALITY CONTROL</div>
+  <div class="chapter-title">PRODUCTION CHECKLIST</div>
+  <div class="chapter-sub">Pre-Generation Verification · Luma Labs Pipeline</div>
+</div>
+
+<div class="page">
+
+  <h2>PRE-GENERATION CHECKLIST — EVERY SHOT</h2>
+
+  <ul class="checklist">
+    <li>Prompt follows XENOS Formula: Subject → Environment → Color Register → Horror Register → Directorial Style → Movement → Technical Spec</li>
+    <li>Horror register is specified and consistent with scene beat analysis</li>
+    <li>Color palette is explicitly named with hex values — never abstract descriptors only</li>
+    <li>Directorial style includes both Villeneuve and Nolan references as appropriate to scene type</li>
+    <li>Camera movement type is specified from the XENOS movement vocabulary</li>
+    <li>Aspect ratio specified: 2.39:1 anamorphic</li>
+    <li>Vent Language annotations checked if Ventborn elements are present in frame</li>
+    <li>Filament state is correct for Kovač's Translation stage if she appears in frame</li>
+    <li>Sound design note included (even for video-only generation — notes inform visual energy)</li>
+    <li>The Ventborn is NOT presented as malevolent — no threatening posture, no predatory motion</li>
+    <li>Scale relationships are correct: human figures compositionally small in Ventborn environments</li>
+    <li>The cut to white (not black) is respected at the Translation moment</li>
+  </ul>
+
+  <h2>POST-GENERATION QUALITY STANDARD</h2>
+
+  <div class="callout-gold">
+    <strong>The Villeneuve Test:</strong> Does this shot make you feel something before you understand it? If yes, it is working. If you understand it before you feel it, it is exposition, not cinema. Generate again.
+  </div>
+
+  <div class="callout-teal">
+    <strong>The Nolan Test:</strong> Does this shot contain more information than the audience can process in one viewing? If yes, it rewards re-watching. If every element is immediately legible, a layer is missing. Consider what the image withholds.
+  </div>
+
+  <h2>ASSEMBLY SEQUENCE FOR 50-MINUTE STRUCTURAL CUT</h2>
+
+  <table>
+    <thead><tr><th>Act</th><th>Minutes</th><th>Sequences</th><th>Dominant Palette</th><th>Horror Register</th></tr></thead>
+    <tbody>
+      <tr><td>Cold Open</td><td>0:00–3:30</td><td>01A, 01B, 01C</td><td>Cool — Void to Teal</td><td>Awe</td></tr>
+      <tr><td>Title Card</td><td>3:30–4:00</td><td>Title / Greek text</td><td>Void black</td><td>—</td></tr>
+      <tr><td>Act One</td><td>4:00–17:00</td><td>Descent sequences, Osei Stage 1</td><td>Warm — Clay/Rust</td><td>Intimate Dread</td></tr>
+      <tr><td>Act Two</td><td>17:00–35:00</td><td>02A–02D, 03A–03B</td><td>Both registers meeting</td><td>Sacred Dread → Philosophical</td></tr>
+      <tr><td>Act Three</td><td>35:00–50:00</td><td>04, Stage 4–5 Bleed, 05A–05C</td><td>Both / Cosmic</td><td>Philosophical → Cosmic</td></tr>
+      <tr><td>Post-Credits</td><td>50:00–52:00</td><td>Earth facility, signal voice</td><td>Cool — Clinical</td><td>Franchise Horror</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout-teal" style="margin-top:40px">
+    <strong style="color:var(--teal); font-family:'Share Tech Mono',monospace; letter-spacing:2px; font-size:13px;">PIPELINE STATUS: READY FOR GENERATION</strong><br/><br/>
+    All modules complete. Prompt library production-ready. Color system locked. Directorial framework applied. Luma Labs generation can proceed on any sequence in any order — each prompt is self-contained with full context. The XENOS visual universe is defined. Enter the ocean.
+  </div>
+
+</div>
+
+<footer>
+  XENOS · CINEMATIC PRODUCTION WORKFLOW · ARCHITECTURE & PROMPT ENGINEERING SYSTEM<br/>
+  VILLENEUVE × NOLAN · PRODUCTION-READY · POETIC · SYMBOLIC · CINEMATIC<br/>
+  PREPARED FOR LUMA LABS PRODUCTION PIPELINE · UMBRA STREAM LLC · ALL RIGHTS RESERVED
+</footer>
+
+</body>
+</html>
